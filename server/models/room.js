@@ -7,17 +7,29 @@ const roomSchema = new mongoose.Schema({
     },
     messages: [
         {
-            message: {
+            content: {
                 type: String,
+                trim: true,
                 required: true
             },
             sender: {
-                type: mongoose.SchemaTypes.ObjectId,
+                type: String,
                 required: true
+            }
+        }
+    ],
+    participants: [
+        {
+            pid: {
+                type: String,
+                unique: true,
             }
         }
     ]
 })
-const Room = mongoose.model(roomSchema)
+roomSchema.methods.isPartOfRoom = function (pid) {
+    return this.participants.some(p => p.pid === pid)
+}
+const Room = mongoose.model('Room', roomSchema)
 
 module.exports = Room
