@@ -30,5 +30,18 @@ startApplication()
 
 
 //TODO:
-//Create rooms
-//Allow sending of message to specific room
+//Create frontend side
+//And routes
+//Then add authentication
+
+
+/*
+{
+  "payload":{
+    "roomId":"First",
+    "message":"Hello 2121",
+    "senderId":"fff_user"
+  },
+  "type":"sendRoomMessage"
+}
+*/

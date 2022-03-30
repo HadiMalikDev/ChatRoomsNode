@@ -1,0 +1,21 @@
+.bot-message{
+    border: 2px solid red;
+    background-color: lightcoral;
+    font-size: large;
+    font-weight: bold;
+    color: white;
+    
+}
+div+div{
+    margin-top: 10px;
+}
+.user-message{
+    border: 2px solid green;
+    background-color: greenyellow;
+    font-size: large;
+    font-weight: bold;
+    color: white;
+}
+.message-wrapper{
+    display: flex;
+}

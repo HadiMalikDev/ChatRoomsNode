@@ -12,12 +12,14 @@ const sendMessageToRoom = async (payload, conn) => {
         "name": roomId
     })
     if (!room) {
-        return conn.send('Given room does not exist')
+        const err = makeFormattedError('Given room does not exist')
+        return conn.send(JSON.stringify(err))
     }
     //Check if sender is part of room's participants
     if (!room.isPartOfRoom(senderId)) {
+        const err = makeFormattedError('Cannot send message to room')
         //Sender does not exist in specified room
-        return conn.send('Cannot send message to room')
+        return conn.send(JSON.stringify(err))
     }
     //Everything checks out
     //Add message to storage first
@@ -27,9 +29,9 @@ const sendMessageToRoom = async (payload, conn) => {
     })
     await room.save()
     roomsMap.get(roomId).forEach((e) => {
-        console.log("clled")
         if (e.readyState === WebSocket.OPEN) {
-            e.send(message)
+            const jsonMessage = makeFormattedMessage(message,senderId)
+            e.send(JSON.stringify(jsonMessage))
         }
     })
 }
@@ -40,7 +42,8 @@ const joinRoom = async (payload, conn) => {
         const room = await Room.findOne({ name: roomId })
 
         if (!room) {
-            return conn.send('Room does not exist')
+            const err = makeFormattedError('Room does not exist')
+            return conn.send(JSON.stringify(err))
         }
         //Add room to list of active rooms if not already done
         if (!roomsMap.has(roomId)) {
@@ -54,11 +57,26 @@ const joinRoom = async (payload, conn) => {
             })
             await room.save()
         }
-        conn.send('Room joined!')
+        const message = makeFormattedMessage(`Room ${roomId} joined!`,'')
+        conn.send(JSON.stringify(message))
     } catch (error) {
-        return conn.send("Could not join room. Maybe you're already in the room")
+        const err = makeFormattedError("Could not join room. Maybe you're already in the room")
+        return conn.send(JSON.stringify(err))
     }
 
+}
+const makeFormattedError = (errorMessage) => {
+    return {
+        error: errorMessage
+    }
+}
+const makeFormattedMessage = (message, senderId) => {
+    return {
+        message:{
+            content:message,
+            sender:senderId
+        }
+    }
 }
 
 module.exports = (server) => {
@@ -67,7 +85,8 @@ module.exports = (server) => {
         server: server,
     })
     wss.on('connection', (conn, request, client) => {
-        conn.send('Send')
+        const welcomeMessage=makeFormattedMessage('Websocket Connection established','')
+        conn.send(JSON.stringify(welcomeMessage))
         conn.on('message', async (data) => {
             const { payload, type } = JSON.parse(data)
             if (type === 'sendRoomMessage') {
@@ -75,6 +94,10 @@ module.exports = (server) => {
             }
             else if (type === 'joinRoom') {
                 joinRoom(payload, conn)
+            }
+            else{
+                const err=makeFormattedError(`${type} is not a supported message type`)
+                conn.send(JSON.stringify(err))
             }
         })
     })

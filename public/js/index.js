@@ -3,7 +3,6 @@ const roomsList = document.getElementById("rooms-list")
 async function onStart() {
     const response = await fetch('/rooms')
     var rData = await response.json()
-    console.log(rData)
     rData.forEach(element => {
         const roomElement = document.createElement("div")
         roomElement.classList.add("room")
@@ -15,9 +14,6 @@ async function onStart() {
         Total Participants: ${element.totalParticipants}
         </div>
         `
-        console.log(element.name)
-        console.log(element.totalParticipants)
-        console.log(roomsList)
         roomsList.appendChild(roomElement)
     });
 
@@ -32,3 +28,13 @@ function validateForm(form) {
     return true
 }
 onStart()
+
+/*
+const ws = new WebSocket('ws://localhost:3000/')
+ws.onopen = function () {
+    console.log("Connected to the server")
+}
+ws.onmessage = function (message) {
+    console.log("Received", message.data)
+}
+*/
