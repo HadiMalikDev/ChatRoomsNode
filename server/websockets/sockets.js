@@ -30,7 +30,7 @@ const sendMessageToRoom = async (payload, conn) => {
     await room.save()
     roomsMap.get(roomId).forEach((e) => {
         if (e.readyState === WebSocket.OPEN) {
-            const jsonMessage = makeFormattedMessage(message,senderId)
+            const jsonMessage = makeFormattedMessage(message, senderId)
             e.send(JSON.stringify(jsonMessage))
         }
     })
@@ -38,6 +38,12 @@ const sendMessageToRoom = async (payload, conn) => {
 
 const joinRoom = async (payload, conn) => {
     const { senderId, roomId } = payload
+
+    if (!senderId || !roomId) {
+        const errorMessage = makeFormattedError('One or more required fields have not been specified')
+        return conn.send(JSON.stringify(errorMessage))
+    }
+
     try {
         const room = await Room.findOne({ name: roomId })
 
@@ -57,7 +63,7 @@ const joinRoom = async (payload, conn) => {
             })
             await room.save()
         }
-        const message = makeFormattedMessage(`Room ${roomId} joined!`,'')
+        const message = makeFormattedMessage(`Room ${roomId} joined!`, '')
         conn.send(JSON.stringify(message))
     } catch (error) {
         const err = makeFormattedError("Could not join room. Maybe you're already in the room")
@@ -72,11 +78,15 @@ const makeFormattedError = (errorMessage) => {
 }
 const makeFormattedMessage = (message, senderId) => {
     return {
-        message:{
-            content:message,
-            sender:senderId
+        message: {
+            content: message,
+            sender: senderId
         }
     }
+}
+
+function heartbeat() {
+    this.isAlive = true
 }
 
 module.exports = (server) => {
@@ -85,7 +95,9 @@ module.exports = (server) => {
         server: server,
     })
     wss.on('connection', (conn, request, client) => {
-        const welcomeMessage=makeFormattedMessage('Websocket Connection established','')
+        conn.isAlive = true
+        conn.on('pong', heartbeat)
+        const welcomeMessage = makeFormattedMessage('Websocket Connection established', '')
         conn.send(JSON.stringify(welcomeMessage))
         conn.on('message', async (data) => {
             const { payload, type } = JSON.parse(data)
@@ -95,11 +107,31 @@ module.exports = (server) => {
             else if (type === 'joinRoom') {
                 joinRoom(payload, conn)
             }
-            else{
-                const err=makeFormattedError(`${type} is not a supported message type`)
+            else {
+                const err = makeFormattedError(`${type} is not a supported message type`)
                 conn.send(JSON.stringify(err))
             }
         })
+
     })
+    const interval = setInterval(() => {
+        wss.clients.forEach((socket) => {
+            if (socket.isAlive === false) {
+                roomsMap.forEach((value,key)=>{
+                    if(value.includes(socket)){
+                        const index = value.indexOf(socket);
+                        value.splice(index,1)
+                    }
+                })
+                return socket.terminate()
+            }
+            socket.isAlive = false
+            socket.ping()
+        })
+        
+    }, 30000);
+    wss.on('close', function () {
+        clearInterval(interval);
+    });
 }
 

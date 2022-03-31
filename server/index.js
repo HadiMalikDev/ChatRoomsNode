@@ -1,17 +1,21 @@
 require('dotenv').config()
-const connect = require('./db/connect')
+
 const express = require('express')
 const http = require('http')
-const socketServer = require('./websockets/sockets')
-const router = require('./routes/routes')
 const path = require('path')
+
+const connect = require('./db/connect')
+const socketServer = require('./websockets/sockets')
+const userRouter = require('./routes/user_routes')
+const roomRouter = require('./routes/room_routes')
 
 const app = express()
 app.use(express.urlencoded({
     extended:true
 }))
 app.use(express.json())
-app.use(router)
+app.use(userRouter)
+app.use(roomRouter)
 
 app.use(express.static(path.join(__dirname, '../public')))
 console.log(path.join(__dirname, '../public'))
