@@ -21,7 +21,8 @@ const roomSchema = new mongoose.Schema({
     participants: [
         {
             pid: {
-                type: String,
+                type: mongoose.Types.ObjectId,
+                required:true,
                 unique: true,
             }
         }

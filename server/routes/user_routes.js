@@ -9,6 +9,4 @@ userRouter.post('/users/login',loginUser)
 userRouter.get('/users/me',auth,getCurrentUser)
 userRouter.delete('/users/me',auth,deleteUser)
 
-
-
 module.exports=userRouter

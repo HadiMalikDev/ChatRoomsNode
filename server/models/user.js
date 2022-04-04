@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     rooms:[
         {
             room:{
-                type:String,
+                type:mongoose.Types.ObjectId,
                 required:true,
                 unique:true
             }   

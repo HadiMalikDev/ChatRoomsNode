@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
-const bcrypt=require('bcrypt')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const User = require('../models/user')
 
 const getCurrentUser = (req, res) => {
-
+    res.send(req.user)
 }
 
 const loginUser = async (req, res) => {
@@ -15,8 +15,9 @@ const loginUser = async (req, res) => {
             return res.status(400).send('All fields are required by the server')
         }
         const user = await User.findOne({ name })
-        if(user && await bcrypt.compare(password,user.password)){
-            return res.status(200).send()
+        if (user && await bcrypt.compare(password, user.password)) {
+            const jwtToken=jwt.sign(user._id.toString(),process.env.SECRET)
+            return res.status(200).send(jwtToken)
         }
         return res.status(400).send('Login authentication failed')
     } catch (error) {
@@ -46,8 +47,14 @@ const registerUser = async (req, res) => {
         res.status(500).send(`Could not register user.${message}`)
     }
 }
-const deleteUser = (req, res) => {
-
+const deleteUser = async (req, res) => {
+    try {
+        const user = req.user
+        await user.delete()
+        res.status(204).send()
+    } catch (error) {
+        res.status(500).send('Could not complete operation')
+    }
 }
 
 module.exports = { getCurrentUser, loginUser, registerUser, deleteUser }
