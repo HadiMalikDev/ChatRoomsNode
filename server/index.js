@@ -34,10 +34,7 @@ startApplication()
 
 
 //TODO:
-//Create frontend side
-//And routes
-//Then add authentication
-
+//Delete existing rooms and users due to edits of schemas of both
 
 /*
 {

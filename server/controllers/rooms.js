@@ -62,7 +62,6 @@ const joinRoom = async (req, res) => {
     }
 
 }
-
 const formatRoom = (room) => {
     return {
         name: room.name,
