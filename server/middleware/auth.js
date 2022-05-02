@@ -17,7 +17,7 @@ const authenticateUser = async (req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        console.log(error)  
+        console.log(error)
         return res.status(500).send('Could not verify token right now. Please try again later')
     }
 }

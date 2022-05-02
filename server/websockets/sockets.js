@@ -3,7 +3,7 @@ const websocket = require('ws')
 const Room = require('../models/room')
 
 const roomsMap = new Map();
-//Key is name of room whilst value is array of websockets 
+//Key is name of room whilst value is array of websockets
 roomsMap.set("First", [])
 
 const sendMessageToRoom = async (payload, conn) => {
@@ -56,6 +56,8 @@ const joinRoom = async (payload, conn) => {
             roomsMap.set(roomId, [])
         }
         roomsMap.get(roomId).push(conn)
+
+        //Check if user is joining room for first time
         if (!room.isPartOfRoom(senderId)) {
             //User is not part of room
             room.participants.push({
@@ -128,7 +130,7 @@ module.exports = (server) => {
             socket.isAlive = false
             socket.ping()
         })
-        
+
     }, 30000);
     wss.on('close', function () {
         clearInterval(interval);
