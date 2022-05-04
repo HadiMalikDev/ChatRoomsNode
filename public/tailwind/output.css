@@ -480,6 +480,25 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin: 10px;
 }
 
+.m-auto {
+  margin: auto;
+}
+
+.my-\[5px\] {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -496,28 +515,36 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 30px;
 }
 
-.h-\[20px\] {
-  height: 20px;
+.h-\[100vh\] {
+  height: 100vh;
 }
 
 .h-\[40px\] {
   height: 40px;
 }
 
-.w-\[100vw\] {
-  width: 100vw;
+.h-\[80vh\] {
+  height: 80vh;
 }
 
-.w-\[40px\] {
-  width: 40px;
+.h-\[20vh\] {
+  height: 20vh;
+}
+
+.h-\[60vh\] {
+  height: 60vh;
+}
+
+.w-\[100vw\] {
+  width: 100vw;
 }
 
 .w-\[80px\] {
   width: 80px;
 }
 
-.flex-grow {
-  flex-grow: 1;
+.flex-1 {
+  flex: 1 1 0%;
 }
 
 @-webkit-keyframes bounce {
@@ -561,8 +588,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   align-content: center;
 }
 
-.content-end {
-  align-content: flex-end;
+.content-start {
+  align-content: flex-start;
 }
 
 .items-center {
@@ -585,8 +612,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   justify-content: space-between;
 }
 
-.justify-items-end {
-  justify-items: end;
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 .rounded-full {
@@ -605,6 +632,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-width: 2px;
 }
 
+.border-\[2px\] {
+  border-width: 2px;
+}
+
 .border-solid {
   border-style: solid;
 }
@@ -612,6 +643,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .border-red-600 {
   --tw-border-opacity: 1;
   border-color: rgb(220 38 38 / var(--tw-border-opacity));
+}
+
+.border-cyan-800 {
+  --tw-border-opacity: 1;
+  border-color: rgb(21 94 117 / var(--tw-border-opacity));
 }
 
 .bg-slate-900 {
@@ -637,6 +673,16 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-cyan-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(6 182 212 / var(--tw-bg-opacity));
+}
+
+.bg-slate-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.bg-slate-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
 
 .p-\[150px\] {
@@ -672,10 +718,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .text-center {
   text-align: center;
-}
-
-.align-middle {
-  vertical-align: middle;
 }
 
 .font-mono {
@@ -726,4 +768,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-slate-200 {
   --tw-text-opacity: 1;
   color: rgb(226 232 240 / var(--tw-text-opacity));
+}
+
+.disabled\:bg-slate-500:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }

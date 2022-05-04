@@ -1,52 +1,56 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const Room = require('./room')
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt=require('jsonwebtoken');
+const Room = require("./room");
 
 const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: [5, "Length must be greater than 5"],
+  },
+  password: {
+    minlength: [8, "Minimum length should be 8"],
+    required: true,
+    type: String,
+  },
+  rooms: [
+    {
+      room: {
+        type: mongoose.Types.ObjectId,
         required: true,
-        unique: true,
-        minlength: [5, 'Length must be greater than 5']
+        ref:'Room'
+      },
     },
-    password: {
-        minlength: [8, 'Minimum length should be 8'],
-        required: true,
-        type: String,
-    },
-    rooms: [
-        {
-            room: {
-                type: mongoose.Types.ObjectId,
-                required: true,
-                unique: true
-            }
-        }
-    ]
-})
-userSchema.pre('save', async function (next) {
-    const user = this
-    if (user.isModified("password")) {
-        const encryptedPassword = await bcrypt.hash(user.password, 10)
-        user.password = encryptedPassword
-    }
-    next()
-})
+  ],
+});
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    const encryptedPassword = await bcrypt.hash(user.password, 10);
+    user.password = encryptedPassword;
+  }
+  next();
+});
 //Deleting user deletes room a user was part of
-userSchema.post('remove', async function (user) {
-    user.rooms.forEach(async (r) => {
-        const room = await Room.findById(r.room)
-        if (room)
-            await room.removeParticipant(user._id)
-    })
-})
+userSchema.post("remove", async function (user) {
+  user.rooms.forEach(async (r) => {
+    const room = await Room.findById(r.room);
+    if (room) await room.removeParticipant(user._id);
+  });
+});
 
 userSchema.methods.leaveRoom = async function (roomId) {
-    const user = this
-    user.rooms=user.rooms.filter((room)=>room.room!=roomId)
-    await user.save()
-}
+  const user = this;
+  user.rooms = user.rooms.filter((room) => room.room != roomId);
+  await user.save();
+};
+userSchema.statics.findByToken = async function (token) {
+  const userId = jwt.verify(token, process.env.SECRET);
+  const user = await this.findById(userId);
+  return user;
+};
+const User = mongoose.model("User", userSchema);
 
-const User = mongoose.model('User', userSchema)
-
-module.exports = User
+module.exports = User;

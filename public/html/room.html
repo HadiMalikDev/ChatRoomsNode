@@ -6,33 +6,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rooms</title>
     <link href="../tailwind/output.css" rel="stylesheet" />
-    <script src="../js/rooms.js"></script>
+    <script src="../js/rooms.js" defer></script>
   </head>
-  <body>
+  <body class="flex flex-col content-start h-[100vh]">
     <div
       id="navbar"
       class="h-[40px] w-[100vw] bg-slate-900 flex justify-end align-end"
     >
       <p id="username" class="text-white px-[5px] leading-6">Muhammad Hadi</p>
-      <button id="logout" class="p-[5px] b-[0px] bg-cyan-500 text-white">
+      <button id="logout" class="p-[5px] b-[0px] bg-cyan-500 text-white" onclick="logout()">
         Logout
       </button>
     </div>
-    <div class="flex justify-between">
+    <div class="flex justify-between flex-1">
       <div class="flex flex-col">
-        <h1>List of Rooms:</h1>
+        <h1>List of MY Rooms:</h1>
         <div id="rooms-list"></div>
+        <div></div>
       </div>
-      <div></div>
+      <div
+        class="flex justify-between flex-col bg-slate-500 flex-1 items-stretch"
+      >
+        <button class="p-[10px] bg-cyan-500" onclick="loadMessages()">
+          Load previous 10 messages
+        </button>
+        <div id="messages" class="p-[10px] overflow-y-auto h-[80vh]"></div>
+        <div>
+          <input
+            type="text"
+            placeholder="Enter your message here"
+            id="text-bar"
+          />
+          <button
+            onclick="sendMessage()"
+            class="p-[5px] b-[0px] bg-cyan-500 text-white"
+          >
+            Send
+          </button>
+        </div>
+      </div>
       <div class="flex flex-col">
-        <label for="room-id">Join Room</label>
-        <input
-          type="text"
-          id="room-id"
-          placeholder="Enter id here"
-          class="block bg-slate-600 rounded-full h-[30px] p-[8px]"
-        />
-        <button class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px]">Join</button>
+        <div><h2>List of ALL Rooms:</h2>
+        <div id="all-rooms-list"></div>
+        </div>
+        <div class="text-center b-[1px] border-2 border-cyan-800">
+          <label for="room-id">Join Room</label>
+          <input
+            type="text"
+            id="room-id"
+            placeholder="Enter id here"
+            class="block bg-slate-600 rounded-full h-[30px] p-[8px] mx-auto"
+          />
+          <button
+            onclick="becomeRoomParticipant()"
+            class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px] my-1"
+          >
+            Join
+          </button>
+        </div>
+        <div id="logs" class="h-[20vh] overflow-y-auto b-[1px] border-2 border-cyan-800"></div>
+        <div class="text-center b-[1px] border-2 border-cyan-800">
+          <label for="create-room">Create Room</label>
+          <input
+            type="text"
+            id="create-room"
+            placeholder="Enter unique name here"
+            class="block bg-slate-600 rounded-full h-[30px] p-[8px] mx-auto"
+          />
+          <button
+            onclick=""
+            class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px] my-1"
+          >
+            Create Room
+          </button>
+        </div>
       </div>
     </div>
   </body>

@@ -23,17 +23,18 @@ const roomSchema = new mongoose.Schema({
             pid: {
                 type: mongoose.Types.ObjectId,
                 required: true,
-                unique: true,
             }
         }
     ]
 })
-roomSchema.methods.isPartOfRoom = function (pid) {
-    return this.participants.some(p => p.pid === pid)
+roomSchema.methods.isPartOfRoom = function (user) {
+    const stringId=user.toString()
+    return this.participants.some(p => p.pid.toString() === stringId)
 }
 roomSchema.methods.removeParticipant = async function (pid) {
     const room = this
-    room.participants = room.participants.filter(p => p.pid != pid)
+    const id=pid.toString()
+    room.participants = room.participants.filter(p => p.pid.toString() != id)
     await room.save()
 }
 
