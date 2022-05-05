@@ -44,7 +44,6 @@ userSchema.post("remove", async function (user) {
 userSchema.methods.leaveRoom = async function (roomId) {
   const user = this;
   const id=roomId.toString()
-  console.log(user.rooms)
   user.rooms = user.rooms.filter((r) => r.room.toString() != id);
   await user.save()
 };

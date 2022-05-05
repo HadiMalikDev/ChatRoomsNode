@@ -10,7 +10,6 @@ const getCurrentUser = (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    console.log(req.body);
     const { name, password } = req.body;
     if (!(name && password)) {
       return res
@@ -59,7 +58,6 @@ const registerUser = async (req, res) => {
     }
     //Duplicate Key error
     if (error.code == 11000) {
-      console.log("call");
       return res.status(400).json({ error: "That username is already taken." });
     }
     //Other wildcases

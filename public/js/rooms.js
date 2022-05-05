@@ -18,12 +18,20 @@ const makeRoomTile = (room, isUserRoom) => {
   div.appendChild(h4Tag);
   if (isUserRoom) {
     const joinButton = document.createElement("button");
-    joinButton.id = `room-${room.name}`;
+    joinButton.id = `room-join-${room.name}`;
     joinButton.className =
       "p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg disabled:bg-slate-500";
     joinButton.textContent = "Join";
     joinButton.addEventListener("click", () => joinRoomClickListener(room));
     div.appendChild(joinButton);
+
+    const removeButton = document.createElement("button");
+    removeButton.id = `room-remove-${room.name}`;
+    removeButton.className =
+      "p-[5px] b-[0px] mx-[4px] bg-red-500 text-white rounded-lg";
+    removeButton.textContent = "Leave";
+    removeButton.addEventListener("click", () => leaveRoomClickListener(room));
+    div.appendChild(removeButton);
   }
   return div;
 };
@@ -43,7 +51,6 @@ const becomeRoomParticipant = async () => {
     },
   });
   if (res.ok) {
-    console.log("room joined");
     getAllRooms();
     getSelfRooms();
   } else {
@@ -58,18 +65,27 @@ const clearMessagesScreen = () => {
     messages.removeChild(messages.firstChild);
   }
 };
-const prependMessagesToDOM = (message, prepend = false) => {
-  const para = document.createElement("div");
-  para.className = "bg-slate-700 border-[2px] bg-slate-900 my-[5px]";
-  const messageSender = document.createElement("h2");
-  messageSender.textContent = message.sender;
-  messageSender.style.marginRight = "10px";
-  para.appendChild(messageSender);
-  const messageContent = document.createElement("p");
-  messageContent.textContent = message.content;
-  para.appendChild(messageContent);
-  if (prepend) messagesList.prepend(para);
-  else messagesList.appendChild(para);
+const createRoom = async () => {
+  const errorMessage = document.getElementById("create-room-error");
+  errorMessage.textContent = "";
+  const roomId = document.getElementById("create-room").value;
+  const res = await fetch("/rooms", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: localStorage.getItem("token"),
+    },
+    body: JSON.stringify({
+      name: roomId,
+    }),
+  });
+  if (res.ok) {
+    getAllRooms();
+    getSelfRooms();
+  } else {
+    const err = await res.json();
+    errorMessage.textContent = err.error || "An unexpected error occured";
+  }
 };
 
 const getAllRooms = async () => {
@@ -82,9 +98,10 @@ const getAllRooms = async () => {
       authorization: localStorage.getItem("token"),
     },
   });
-  const data = await res.json();
-  data.forEach((room) => list.appendChild(makeRoomTile(room, false)));
-  console.log(data);
+  if (res.ok) {
+    const data = await res.json();
+    data.forEach((room) => list.appendChild(makeRoomTile(room, false)));
+  }
 };
 const getSelfRooms = async () => {
   const list = document.getElementById("rooms-list");
@@ -96,78 +113,30 @@ const getSelfRooms = async () => {
       authorization: localStorage.getItem("token"),
     },
   });
-  const data = await res.json();
-  data.forEach((room) => list.appendChild(makeRoomTile(room, true)));
-  console.log(data);
+  if (res.ok) {
+    const data = await res.json();
+    data.forEach((room) => list.appendChild(makeRoomTile(room, true)));
+  }
 };
 //Handles updating buttons whenever user joins a new room
 const handleRoomChange = (new_room) => {
   if (currentRoom) {
-    const button = document.getElementById(`room-${currentRoom}`);
+    const button = document.getElementById(`room-join-${currentRoom}`);
     button.disabled = false;
     button.textContent = "Join";
   }
-  const button = document.getElementById(`room-${new_room}`);
+  const button = document.getElementById(`room-join-${new_room}`);
   button.disabled = true;
   button.textContent = "Joined";
   currentRoom = new_room;
   clearMessagesScreen();
 };
-const loadMessages = async () => {
-  const res = await fetch(
-    `/rooms/${currentRoom}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        authorization: localStorage.getItem("token"),
-      },
-    }
-  );
-  if (res.ok) {
-    const data = await res.json();
-    if (data.length != 0) pageNumber += 1;
-    for (var i = data.length - 1; i >= 0; i--) {
-      prependMessagesToDOM(data[i], true);
-    }
-  } else {
-    const x = await res.json();
-    console.log(x);
-  }
-};
-const logout=()=>{
-  ws.close()
-  localStorage.removeItem('token')
-  window.location.replace('localhost:3000/html/login.html')
-}
-const removeAllChildNodes = (parent) => {
-  while (parent.firstChild) {
-    parent.removeChild(parent.firstChild);
-  }
-};
-const sendMessage = () => {
-  const messageContent = document.getElementById("text-bar").value;
-  const message = {
-    type: "sendRoomMessage",
-    payload: {
-      message: messageContent,
-      senderId: localStorage.getItem("token"),
-      roomId: currentRoom,
-    },
-  };
-  ws.send(JSON.stringify(message));
-};
-
-getAllRooms();
-getSelfRooms();
-//websocket logic
-
 const joinRoomClickListener = (room) => {
   const token = localStorage.getItem("token");
   const roomId = room.name;
 
   //Unsubscribe to previous room messages before joining current room
   if (ws.readyState === ws.OPEN && currentRoom) {
-    console.log(currentRoom);
     const dataToSend = {
       type: "leaveRoom",
       payload: {
@@ -188,15 +157,103 @@ const joinRoomClickListener = (room) => {
     ws.send(JSON.stringify(dataToSend));
   }
 };
-
-ws.onopen = function () {
-  console.log("Connected to the server");
+const leaveRoomClickListener = async (room) => {
+  const roomId = room.name;
+  if (currentRoom == roomId)
+    return alert("Cannot remove room that you have joined");
+  const res = await fetch(`/rooms/leave/${roomId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: localStorage.getItem("token"),
+    },
+  });
+  if (res.ok) {
+    getAllRooms();
+    getSelfRooms();
+  } else {
+    const err = await res.json();
+    alert(err.error || "Could not leave room");
+  }
 };
+const loadMessages = async () => {
+  const res = await fetch(
+    `/rooms/${currentRoom}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    if (data.length != 0) pageNumber += 1;
+    for (var i = data.length - 1; i >= 0; i--) {
+      prependMessagesToDOM(data[i], true);
+    }
+  } else {
+    const x = await res.json();
+  }
+};
+const logout = () => {
+  ws.close();
+  localStorage.removeItem("token");
+  window.location.replace("http://localhost:3000/html/login.html");
+};
+const prependMessagesToDOM = (message, prepend = false) => {
+  const para = document.createElement("div");
+  para.className = "bg-slate-700 border-[2px] bg-slate-900 my-[5px]";
+  const messageSender = document.createElement("h2");
+  messageSender.textContent = message.sender;
+  messageSender.style.marginRight = "10px";
+  para.appendChild(messageSender);
+  const messageContent = document.createElement("p");
+  messageContent.textContent = message.content;
+  para.appendChild(messageContent);
+  if (prepend) messagesList.prepend(para);
+  else messagesList.appendChild(para);
+};
+
+const removeAllChildNodes = (parent) => {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+};
+const sendMessage = () => {
+  const messageContent = document.getElementById("text-bar").value;
+  const message = {
+    type: "sendRoomMessage",
+    payload: {
+      message: messageContent,
+      senderId: localStorage.getItem("token"),
+      roomId: currentRoom,
+    },
+  };
+  ws.send(JSON.stringify(message));
+};
+
+getAllRooms();
+getSelfRooms();
+document.getElementById("logout").addEventListener("click", () => logout());
+document
+  .getElementById("ld-messages")
+  .addEventListener("click", () => loadMessages());
+document
+  .getElementById("send-message-button")
+  .addEventListener("click", () => sendMessage());
+document
+  .getElementById("become-participant")
+  .addEventListener("click", () => becomeRoomParticipant());
+document
+  .getElementById("create-room-button")
+  .addEventListener("click", () => createRoom());
+
+//websocket logic
+ws.onopen = function () {};
 ws.onmessage = function messageHandler(msg) {
   const { error, message } = JSON.parse(msg.data);
-  console.log(JSON.parse(msg.data));
   if (error) {
-    console.log(error);
     return alert(message);
   }
   if (message.sender === "roomJoinConfirmation") {

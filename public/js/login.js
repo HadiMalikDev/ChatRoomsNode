@@ -17,7 +17,6 @@ const getFormData = (form) => {
   formData.forEach((val, key) => {
     data[key] = val;
   });
-  console.log(data);
   return data;
 };
 form.addEventListener("submit", async (event) => {
@@ -28,12 +27,9 @@ form.addEventListener("submit", async (event) => {
   const js = await res.json();
   if (res.ok) {
     //Successful login
-    console.log("Login successful!");
     localStorage.setItem("token",js.token)
-    console.log(localStorage.getItem("token"))
+    window.location.replace('/html/room.html')
   } else {
-    console.log("called");
-    console.log(errorMessage)
     errorMessage.textContent =
       js.error || "Could not login right now";
     errorMessage.style.visibility = "visible";

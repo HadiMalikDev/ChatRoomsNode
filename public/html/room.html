@@ -14,7 +14,7 @@
       class="h-[40px] w-[100vw] bg-slate-900 flex justify-end align-end"
     >
       <p id="username" class="text-white px-[5px] leading-6">Muhammad Hadi</p>
-      <button id="logout" class="p-[5px] b-[0px] bg-cyan-500 text-white" onclick="logout()">
+      <button id="logout" class="p-[5px] b-[0px] bg-cyan-500 text-white">
         Logout
       </button>
     </div>
@@ -27,7 +27,7 @@
       <div
         class="flex justify-between flex-col bg-slate-500 flex-1 items-stretch"
       >
-        <button class="p-[10px] bg-cyan-500" onclick="loadMessages()">
+        <button class="p-[10px] bg-cyan-500" id="ld-messages">
           Load previous 10 messages
         </button>
         <div id="messages" class="p-[10px] overflow-y-auto h-[80vh]"></div>
@@ -38,7 +38,7 @@
             id="text-bar"
           />
           <button
-            onclick="sendMessage()"
+            id="send-message-button"
             class="p-[5px] b-[0px] bg-cyan-500 text-white"
           >
             Send
@@ -46,8 +46,9 @@
         </div>
       </div>
       <div class="flex flex-col">
-        <div><h2>List of ALL Rooms:</h2>
-        <div id="all-rooms-list"></div>
+        <div>
+          <h2>List of ALL Rooms:</h2>
+          <div id="all-rooms-list"></div>
         </div>
         <div class="text-center b-[1px] border-2 border-cyan-800">
           <label for="room-id">Join Room</label>
@@ -58,13 +59,16 @@
             class="block bg-slate-600 rounded-full h-[30px] p-[8px] mx-auto"
           />
           <button
-            onclick="becomeRoomParticipant()"
+            id="become-participant"
             class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px] my-1"
           >
             Join
           </button>
         </div>
-        <div id="logs" class="h-[20vh] overflow-y-auto b-[1px] border-2 border-cyan-800"></div>
+        <div
+          id="logs"
+          class="h-[15vh] overflow-y-auto b-[1px] border-2 border-cyan-800"
+        ></div>
         <div class="text-center b-[1px] border-2 border-cyan-800">
           <label for="create-room">Create Room</label>
           <input
@@ -74,11 +78,15 @@
             class="block bg-slate-600 rounded-full h-[30px] p-[8px] mx-auto"
           />
           <button
-            onclick=""
+            id="create-room-button"
             class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px] my-1"
           >
             Create Room
           </button>
+          <p
+            id="create-room-error"
+            class="bg-red-800 text-white text-center"
+          ></p>
         </div>
       </div>
     </div>

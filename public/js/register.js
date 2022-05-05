@@ -16,7 +16,6 @@ const getFormData = (form) => {
   formData.forEach((val, key) => {
     data[key] = val;
   });
-  console.log(data);
   return data;
 };
 function showErrorMessage(message) {
@@ -38,10 +37,9 @@ registerForm.addEventListener("submit", async (event) => {
   const js = await res.json();
   if (res.ok || res.status==201) {
     //Successful login
-    console.log("Registration successful!");
-    localStorage.setItem("token",js.token)
+    localStorage.setItem("token",js.token);
+    window.location.replace('/html/room.html')
   } else {
-    console.log("called");
     showErrorMessage(js.error);
   }
 });

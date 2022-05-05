@@ -480,15 +480,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin: 10px;
 }
 
-.m-auto {
-  margin: auto;
-}
-
-.my-\[5px\] {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -497,6 +488,16 @@ Ensure the default browser behavior of the `hidden` attribute.
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+
+.mx-\[4px\] {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.my-\[5px\] {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .block {
@@ -527,12 +528,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 80vh;
 }
 
-.h-\[20vh\] {
-  height: 20vh;
-}
-
-.h-\[60vh\] {
-  height: 60vh;
+.h-\[15vh\] {
+  height: 15vh;
 }
 
 .w-\[100vw\] {
@@ -582,10 +579,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .flex-col {
   flex-direction: column;
-}
-
-.content-center {
-  align-content: center;
 }
 
 .content-start {
@@ -678,6 +671,16 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-slate-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.bg-red-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
+}
+
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .bg-slate-700 {

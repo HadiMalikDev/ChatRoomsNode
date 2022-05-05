@@ -9,7 +9,7 @@ const createRoom = async (req, res) => {
     });
     return res.status(201).send("Room successfully created");
   }
-  return res.status(400).send("Room already exists");
+  return res.status(400).json({error:"Room already exists"});
 };
 const deleteRoom = async (req, res) => {
   try {
@@ -60,10 +60,7 @@ const getSpecificRoomMessages = async (req, res) => {
   const startingIndex = parseInt(pageNumber) * parseInt(pageSize);
   const endingIndex = startingIndex + parseInt(pageSize);
   let returnMessages;
-  console.log(startingIndex);
-  console.log(endingIndex);
   if (endingIndex === 0) {
-    console.log("called");
     returnMessages = room.messages.slice(startingIndex);
   } else {
     returnMessages = room.messages.slice(startingIndex, endingIndex);
@@ -80,7 +77,6 @@ const joinRoom = async (req, res) => {
   if (room.isPartOfRoom(req.user._id)) {
     return res.status(400).json({ error: "Already joined room" });
   }
-  console.log(`Room id is ${room._id}`)
   try {
     room.participants.push({
       pid: req.user._id,
@@ -92,7 +88,6 @@ const joinRoom = async (req, res) => {
     await req.user.save();
     return res.status(200).send();
   } catch (error) {
-    console.log(error)
     return res.status(500).json({ error: "Could not complete action" });
   }
 };
@@ -110,7 +105,6 @@ const leaveRoom = async (req, res) => {
     }
     return res.status(400).json({ error: "User is not part of room" });
   } catch (error) {
-    console.log(error)
     if (error.message == 404)
       return res.status(404).json({ error: "Specified room does not exist" });
     return res.status(500).json({ error: error.message });
