@@ -48,7 +48,21 @@ const registerUser = async (req, res) => {
     const jwtToken = jwt.sign(user._id.toString(), process.env.SECRET);
     return res.status(201).json({ token: jwtToken });
   } catch (error) {
-    console.log(error);
+    //Validation Error
+    if (error.errors && error.errors.password) {
+      const pwError = error.errors.password;
+      if (pwError.kind === "minlength") {
+        return res.status(400).json({
+          error: `${pwError.path} ${pwError.properties.message.toLowerCase()}`,
+        });
+      }
+    }
+    //Duplicate Key error
+    if (error.code == 11000) {
+      console.log("call");
+      return res.status(400).json({ error: "That username is already taken." });
+    }
+    //Other wildcases
     let message = " ";
     if (error instanceof mongoose.Error) {
       message += error._message || "";

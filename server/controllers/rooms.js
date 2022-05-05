@@ -11,7 +11,18 @@ const createRoom = async (req, res) => {
   }
   return res.status(400).send("Room already exists");
 };
-
+const deleteRoom = async (req, res) => {
+  try {
+    const roomId = req.params.roomId;
+    if (!roomId) return res.status(400).json({ error: "No id specified" });
+    const room = await Room.findOne({ name: roomId });
+    await room.remove()
+    if (!room) return res.status(404).json({ error: "No such room exists" });
+    return res.status(204).send()
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 const getAllRooms = async (req, res) => {
   const rooms = await Room.find();
   return res.json(rooms.map((room) => formatRoom(room)));
@@ -61,6 +72,7 @@ const getSpecificRoomMessages = async (req, res) => {
 };
 const joinRoom = async (req, res) => {
   const roomId = req.params.roomId;
+  if (!roomId) return res.status(400).json({ error: "No id specified" });
   const room = await Room.findOne({ name: roomId });
   if (!room) {
     return res.status(404).json({ error: "Room does not exist" });
@@ -68,7 +80,7 @@ const joinRoom = async (req, res) => {
   if (room.isPartOfRoom(req.user._id)) {
     return res.status(400).json({ error: "Already joined room" });
   }
-
+  console.log(`Room id is ${room._id}`)
   try {
     room.participants.push({
       pid: req.user._id,
@@ -80,7 +92,28 @@ const joinRoom = async (req, res) => {
     await req.user.save();
     return res.status(200).send();
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ error: "Could not complete action" });
+  }
+};
+const leaveRoom = async (req, res) => {
+  try {
+    if (!req.params.roomId)
+      return res.status(400).json({ error: "Please specify room id" });
+
+    const room = await Room.findOne({ name: req.params.roomId });
+    if (!room) return res.status(404).json({ error: "Room does not exist" });
+    if (room.isPartOfRoom(req.user._id)) {
+      await room.removeParticipant(req.user._id);
+      await req.user.leaveRoom(room._id);
+      return res.status(200).send();
+    }
+    return res.status(400).json({ error: "User is not part of room" });
+  } catch (error) {
+    console.log(error)
+    if (error.message == 404)
+      return res.status(404).json({ error: "Specified room does not exist" });
+    return res.status(500).json({ error: error.message });
   }
 };
 const formatRoom = (room) => {
@@ -95,4 +128,6 @@ module.exports = {
   getMyRooms,
   getSpecificRoomMessages,
   joinRoom,
+  leaveRoom,
+  deleteRoom,
 };

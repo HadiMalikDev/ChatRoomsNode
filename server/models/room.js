@@ -39,6 +39,7 @@ roomSchema.methods.removeParticipant = async function (pid) {
 }
 
 roomSchema.post('remove', function (room) {
+    console.log("Post hook called")
     room.participants.forEach(async (p) => {
         const user = await User.findById(p.pid)
         if (user) {

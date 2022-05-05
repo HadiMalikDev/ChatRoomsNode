@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt=require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const Room = require("./room");
 
 const userSchema = new mongoose.Schema({
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
       room: {
         type: mongoose.Types.ObjectId,
         required: true,
-        ref:'Room'
+        ref: "Room",
       },
     },
   ],
@@ -33,7 +33,7 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
-//Deleting user deletes room a user was part of
+//Deleting user updates room(s) a user was part of
 userSchema.post("remove", async function (user) {
   user.rooms.forEach(async (r) => {
     const room = await Room.findById(r.room);
@@ -43,8 +43,10 @@ userSchema.post("remove", async function (user) {
 
 userSchema.methods.leaveRoom = async function (roomId) {
   const user = this;
-  user.rooms = user.rooms.filter((room) => room.room != roomId);
-  await user.save();
+  const id=roomId.toString()
+  console.log(user.rooms)
+  user.rooms = user.rooms.filter((r) => r.room.toString() != id);
+  await user.save()
 };
 userSchema.statics.findByToken = async function (token) {
   const userId = jwt.verify(token, process.env.SECRET);
