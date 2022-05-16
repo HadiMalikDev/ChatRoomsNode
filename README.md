@@ -4,6 +4,8 @@ This project demonstrates knowledge about working with WebSockets, JWT, Mongoose
 
 It also features a basic frontend constructed with the aid of Tailwind CSS.
 
+The heroku version of this project can be found at https://hadi-chatrooms-node.herokuapp.com/
+
 ## Features
 
 Users can create accounts and create, join and leave rooms. Once the user joins a room, they can send messages to the room, which are broadcasted to all other participants of the room.
