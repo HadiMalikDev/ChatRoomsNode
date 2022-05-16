@@ -15,7 +15,6 @@ const app = express();
 //Security
 app.use(helmet());
 app.use(cors());
-
 app.use(
   express.urlencoded({
     extended: true,
@@ -32,7 +31,7 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 const startApplication = async () => {
-  await connect(process.env.MONGO_URI);
+  await connect(process.env.MONGO_URI)
   socketServer(server);
   server.listen(PORT, () => {
     console.log("Server up");
@@ -40,17 +39,3 @@ const startApplication = async () => {
 };
 
 startApplication();
-
-//TODO:
-//Delete existing rooms and users due to edits of schemas of both
-
-/*
-{
-  "payload":{
-    "roomId":"First",
-    "message":"Hello 2121",
-    "senderId":"fff_user"
-  },
-  "type":"sendRoomMessage"
-}
-*/

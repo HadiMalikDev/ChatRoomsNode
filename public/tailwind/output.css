@@ -532,6 +532,22 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 15vh;
 }
 
+.h-\[20vh\] {
+  height: 20vh;
+}
+
+.h-\[25vh\] {
+  height: 25vh;
+}
+
+.h-\[50vh\] {
+  height: 50vh;
+}
+
+.h-\[40vh\] {
+  height: 40vh;
+}
+
 .w-\[100vw\] {
   width: 100vw;
 }

@@ -29,7 +29,7 @@ const makeRoomTile = (room, isUserRoom) => {
     removeButton.id = `room-remove-${room.name}`;
     removeButton.className =
       "p-[5px] b-[0px] mx-[4px] bg-red-500 text-white rounded-lg";
-    removeButton.textContent = "Leave";
+    removeButton.textContent = "Leave As Room Participant";
     removeButton.addEventListener("click", () => leaveRoomClickListener(room));
     div.appendChild(removeButton);
   }
@@ -58,7 +58,17 @@ const becomeRoomParticipant = async () => {
     alert(`Could not join room ${roomId}. ${body.error}`);
   }
 };
-
+const setUserName = async () => {
+  const user = await fetch("/users/me", {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: localStorage.getItem("token"),
+    },
+  });
+  const json = await user.json();
+  const userName = json.name;
+  document.getElementById("username").textContent = userName || "";
+};
 const clearMessagesScreen = () => {
   const messages = document.getElementById("messages");
   while (messages.firstChild) {
@@ -213,6 +223,7 @@ const prependMessagesToDOM = (message, prepend = false) => {
   para.appendChild(messageContent);
   if (prepend) messagesList.prepend(para);
   else messagesList.appendChild(para);
+  messagesList.scrollTop=messagesList.scrollHeight;
 };
 
 const removeAllChildNodes = (parent) => {
@@ -235,6 +246,7 @@ const sendMessage = () => {
 
 getAllRooms();
 getSelfRooms();
+setUserName();
 document.getElementById("logout").addEventListener("click", () => logout());
 document
   .getElementById("ld-messages")

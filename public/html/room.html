@@ -13,7 +13,7 @@
       id="navbar"
       class="h-[40px] w-[100vw] bg-slate-900 flex justify-end align-end"
     >
-      <p id="username" class="text-white px-[5px] leading-6">Muhammad Hadi</p>
+      <p id="username" class="text-white px-[5px] leading-6"></p>
       <button id="logout" class="p-[5px] b-[0px] bg-cyan-500 text-white">
         Logout
       </button>
@@ -47,8 +47,8 @@
       </div>
       <div class="flex flex-col">
         <div>
-          <h2>List of ALL Rooms:</h2>
-          <div id="all-rooms-list"></div>
+          <h2 class="text-center font-bold">All Rooms</h2>
+          <div id="all-rooms-list" class="h-[40vh] overflow-y-auto"></div>
         </div>
         <div class="text-center b-[1px] border-2 border-cyan-800">
           <label for="room-id">Join Room</label>
@@ -60,9 +60,9 @@
           />
           <button
             id="become-participant"
-            class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg w-[80px] my-1"
+            class="p-[5px] b-[0px] bg-cyan-500 text-white rounded-lg my-1"
           >
-            Join
+            Become Room Participant
           </button>
         </div>
         <div
